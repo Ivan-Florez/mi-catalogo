@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card p-4 shadow-sm bg-white">
+            <h3 class="fw-bold text-success">✏️ Editar Inmueble: {{ inmueble.titulo }}</h3>
+            <p class="text-muted small">Modifica los datos que necesites. Los campos que dejes igual no se perderán.</p>
+            <hr>
+            
+            <form action="/admin/editar/{{ inmueble.id }}" method="POST" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Nombre / Título</label>
+                    <input type="text" name="titulo" class="form-control" value="{{ inmueble.titulo }}" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Sector / Grupo</label>
+                    <input type="text" name="sector" class="form-control" value="{{ inmueble.sector }}" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Precio Actual</label>
+                    <input type="text" name="precio" class="form-control" value="{{ inmueble.precio }}" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Link de Google Maps</label>
+                    <input type="url" name="google_maps" class="form-control" value="{{ inmueble.google_maps }}">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Descripción</label>
+                    <textarea name="descripcion" class="form-control" rows="4" required>{{ inmueble.descripcion }}</textarea>
+                </div>
+                
+                <div class="mb-3 bg-light p-2 rounded">
+                    <label class="form-label fw-bold text-danger">Cambiar Foto de Portada (Opcional)</label>
+                    <input type="file" name="imagen_principal" class="form-control" accept="image/*">
+                    <small class="text-muted">Selecciona un archivo solo si quieres cambiar la foto actual.</small>
+                </div>
+                
+                <div class="mb-4 bg-light p-2 rounded">
+                    <label class="form-label fw-bold text-success">Añadir más fotos a la Galería (Opcional)</label>
+                    <input type="file" name="galeria_fotos" class="form-control" accept="image/*" multiple>
+                    <small class="text-muted">Estas fotos se sumarán a las que ya habías subido.</small>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success w-100 fw-bold fs-5">💾 Guardar Cambios</button>
+                    <a href="/admin" class="btn btn-outline-secondary w-50 align-self-center py-2">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

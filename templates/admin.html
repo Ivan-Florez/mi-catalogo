@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card p-3 shadow-sm position-sticky" style="top: 20px;">
+            <h4 class="fw-bold text-primary">Subir Nuevo Inmueble</h4>
+            <hr>
+            <form action="/admin" method="POST" enctype="multipart/form-data">
+                <div class="mb-2">
+                    <label class="form-label">Nombre / Título</label>
+                    <input type="text" name="titulo" class="form-control" placeholder="Ej: Apto 201" required>
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">Sector / Grupo</label>
+                    <input type="text" name="sector" class="form-control" placeholder="Ej: Sector 1" required>
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">Precio</label>
+                    <input type="text" name="precio" class="form-control" placeholder="Ej: $1.200.000" required>
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">Link de Google Maps</label>
+                    <input type="url" name="google_maps" class="form-control">
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">Descripción</label>
+                    <textarea name="descripcion" class="form-control" rows="3" required></textarea>
+                </div>
+                <div class="mb-2">
+                    <label class="form-label text-danger fw-bold">Foto de Portada</label>
+                    <input type="file" name="imagen_principal" class="form-control" accept="image/*" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label text-success fw-bold">Agregar Fotos de Galería</label>
+                    <input type="file" name="galeria_fotos" class="form-control" accept="image/*" multiple>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 fw-bold">🚀 Publicar Inmueble</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <h4 class="fw-bold">Inventario de Inmuebles</h4>
+        <div class="table-responsive bg-white p-3 rounded shadow-sm">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Portada</th>
+                        <th>Inmueble</th>
+                        <th>Sector</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for inm in inmuebles %}
+                    <tr>
+                        <td>
+                            <img src="{{ url_for('static', filename='uploads/' + inm.imagen_principal) }}" style="width: 60px; height: 45px; object-fit: cover;" class="rounded">
+                        </td>
+                        <td><strong>{{ inm.titulo }}</strong><br><small class="text-muted">{{ inm.precio }}</small></td>
+                        <td><span class="badge bg-secondary">{{ inm.sector }}</span></td>
+                        <td>
+                            {% if inm.disponible %}
+                                <span class="badge bg-success">Visible</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">Oculto</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="/admin/alternar/{{ inm.id }}" class="btn btn-sm {% if inm.disponible %}btn-outline-warning text-dark{% else %}btn-outline-success{% endif %}">
+                                {% if inm.disponible %} Ocultar {% else %} Mostrar {% endif %}
+                            </a>
+                            <a href="/admin/editar/{{ inm.id }}" class="btn btn-sm btn-info text-white">✏️ Editar</a>
+                            <a href="/admin/eliminar/{{ inm.id }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Eliminar por completo?')">🗑️</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="text-center my-4">
+    <h1 class="fw-bold">Inmuebles Disponibles</h1>
+    <p class="text-muted">Explora nuestras opciones y desliza las fotos para conocer cada espacio.</p>
+</div>
+
+{% if not sectores %}
+    <div class="alert alert-info text-center">Por el momento no hay inmuebles disponibles.</div>
+{% endif %}
+
+{% for sector, inmuebles in sectores.items() %}
+    <h2 class="sector-header">{{ sector }}</h2>
+    
+    {% for inm in inmuebles %}
+        <div class="card shadow-sm my-4 bg-white border-0 overflow-hidden">
+            <div class="row g-0">
+                
+                <div class="col-md-6 p-4 d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="mb-3 rounded overflow-hidden shadow-sm" style="height: 200px;">
+                            <img src="{{ url_for('static', filename='uploads/' + inm.imagen_principal) }}" class="w-100 h-100" style="object-fit: cover;" alt="Fachada o Portada">
+                        </div>
+
+                        <h3 class="fw-bold text-dark mb-1">{{ inm.titulo }}</h3>
+                        <h4 class="text-success fw-bold mb-3">{{ inm.precio }}</h4>
+                        <hr>
+                        <p class="text-secondary" style="white-space: pre-line; font-size: 1.05rem;">{{ inm.descripcion }}</p>
+                    </div>
+                    
+                    <div class="d-grid gap-2 mt-4">
+                        {% if inm.google_maps %}
+                            <a href="{{ inm.google_maps }}" target="_blank" class="btn btn-outline-secondary">📍 Ver Ubicación en Google Maps</a>
+                        {% endif %}
+                        <a href="https://wa.me/573005781358?text=Hola,%20estoy%20interesado%20en%20el%20inmueble:%20{{ inm.titulo }}%20del%20{{ inm.sector }}" 
+                           target="_blank" class="btn btn-success btn-lg fw-bold">
+                           💬 Consultar Disponibilidad por WhatsApp
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-md-6 bg-light" style="min-height: 430px;">
+                    <div id="carrusel-{{ inm.id }}" class="carousel slide h-100" data-bs-ride="false">
+                        <div class="carousel-inner h-100">
+                            
+                            {% if inm.galeria %}
+                                {% for foto in inm.galeria %}
+                                    <div class="carousel-item {% if loop.first %}active{% endif %} h-100">
+                                        <img src="{{ url_for('static', filename='uploads/' + foto.ruta_foto) }}" class="w-100 h-100" style="object-fit: cover; min-height: 430px;" alt="Áreas del inmueble">
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="carousel-item active h-100 d-flex align-items-center justify-content-center bg-dark text-white-50">
+                                    <div class="text-center">
+                                        <span style="font-size: 3rem;">📸</span>
+                                        <p class="mt-2">No hay fotos adicionales de áreas internas.</p>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                        </div>
+                        
+                        {% if inm.galeria|length > 1 %}
+                            <button class="carousel-control-prev" type="button" data-bs-target="#carrusel-{{ inm.id }}" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true" style="filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.8));"></span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#carrusel-{{ inm.id }}" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true" style="filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.8));"></span>
+                            </button>
+                        {% endif %}
+                        
+                        <div class="position-absolute bottom-0 end-0 bg-dark text-white px-3 py-1 m-2 rounded-pill small" style="--bs-bg-opacity: .7;">
+                            📸 {{ inm.galeria|length }} Fotos de áreas internas
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    {% endfor %}
+{% endfor %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}

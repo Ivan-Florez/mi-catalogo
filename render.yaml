@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: catalogo-inmobiliario-whatsapp
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app

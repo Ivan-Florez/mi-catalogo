@@ -5,14 +5,22 @@ from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///inmuebles.db'
+# --- CONFIGURACIÓN DE BASE DE DATOS INTELIGENTE ---
+DATABASE_URL = os.environ.get('DATABASE_URL')
+if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL or 'sqlite:///catalogo_fijo.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Configuración de almacenamiento de fotos (Usa el almacenamiento persistente de Render)
 app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
 app.config['SECRET_KEY'] = 'mi_clave_secreta_123'
 
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 db = SQLAlchemy(app)
 
+# --- MODELOS ---
 class Inmueble(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     titulo = db.Column(db.String(100), nullable=False)
@@ -29,9 +37,11 @@ class FotoGaleria(db.Model):
     inmueble_id = db.Column(db.Integer, db.ForeignKey('inmueble.id'), nullable=False)
     ruta_foto = db.Column(db.String(200), nullable=False)
 
+# Crear las tablas al iniciar
 with app.app_context():
     db.create_all()
 
+# --- RUTAS ---
 @app.route('/')
 def index():
     todos_inmuebles = Inmueble.query.filter_by(disponible=True).order_by(Inmueble.sector).all()
@@ -78,7 +88,6 @@ def admin():
     lista_inmuebles = Inmueble.query.all()
     return render_template('admin.html', inmuebles=lista_inmuebles)
 
-# --- CONFIGURACIÓN CORREGIDA PARA EDITAR ---
 @app.route('/admin/editar/<int:id>', methods=['GET', 'POST'])
 def editar(id):
     inmueble = Inmueble.query.get_or_404(id)
@@ -89,22 +98,15 @@ def editar(id):
         inmueble.google_maps = request.form['google_maps']
         inmueble.descripcion = request.form['descripcion']
         
-        # 1. Si sube una nueva foto principal, la reemplazamos
         foto_principal = request.files['imagen_principal']
         if foto_principal and foto_principal.filename != '':
             filename_principal = 'principal_' + secure_filename(foto_principal.filename)
             foto_principal.save(os.path.join(app.config['UPLOAD_FOLDER'], filename_principal))
             inmueble.imagen_principal = filename_principal
             
-        # 2. Si sube fotos en la galería, BORRAMOS las anteriores primero
         fotos_galeria = request.files.getlist('galeria_fotos')
-        
-        # Revisamos si al menos seleccionó una foto nueva válida antes de borrar
         if fotos_galeria and fotos_galeria[0].filename != '':
-            # Esto borra los registros viejos de la galería de este inmueble
             FotoGaleria.query.filter_by(inmueble_id=inmueble.id).delete()
-            
-            # Ahora guardamos las fotos nuevas de la galería
             for idx, foto in enumerate(fotos_galeria):
                 if foto and foto.filename != '':
                     filename_galeria = f"galeria_{inmueble.id}_edit_{idx}_{secure_filename(foto.filename)}"

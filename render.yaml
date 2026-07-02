@@ -1,6 +1,58 @@
 services:
+  # 1. Catálogo de Inmuebles en Python
   - type: web
-    name: catalogo-inmobiliario-whatsapp
+    name: catalogo-inmobiliario
     env: python
+    plan: free
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app:app
+    envVars:
+      - key: SECRET_KEY
+        value: mi_clave_secreta_123
+      - key: DATABASE_URL
+        fromDatabase:
+          name: n8n-db
+          property: connectionString
+
+  # 2. Servidor de n8n
+  - type: web
+    name: mi-n8n-automatizacion
+    env: docker
+    plan: free
+    dockerfilePath: Dockerfile
+    envVars:
+      - key: N8N_BASIC_AUTH_ACTIVE
+        value: "true"
+      - key: N8N_BASIC_AUTH_USER
+        value: admin
+      - key: N8N_BASIC_AUTH_PASSWORD
+        value: Inmobiliaria2026*
+      - key: N8N_PORT
+        value: 10000
+      - key: DB_TYPE
+        value: postgresdb
+      - key: DB_POSTGRESDB_DATABASE
+        fromDatabase:
+          name: n8n-db
+          property: database
+      - key: DB_POSTGRESDB_HOST
+        fromDatabase:
+          name: n8n-db
+          property: host
+      - key: DB_POSTGRESDB_PORT
+        fromDatabase:
+          name: n8n-db
+          property: port
+      - key: DB_POSTGRESDB_USER
+        fromDatabase:
+          name: n8n-db
+          property: user
+      - key: DB_POSTGRESDB_PASSWORD
+        fromDatabase:
+          name: n8n-db
+          property: password
+
+databases:
+  # 3. La base de datos central (Plan Free)
+  - name: n8n-db
+    plan: free

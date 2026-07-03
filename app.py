@@ -5,19 +5,14 @@ from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
-# --- CONFIGURACIÓN DE BASE DE DATOS INTELIGENTE ---
-DATABASE_URL = os.environ.get('DATABASE_URL')
-if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
-    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
-
-app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL or 'sqlite:///catalogo_fijo.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-# Configuración de almacenamiento de fotos (Usa el almacenamiento persistente de Render)
-app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
+# Al estar en modo pago, usamos SQLite pero guardado DENTRO del disco fijo para que no se borre
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////var/data/catalogo_fijo.db'
+app.config['STATIC_UPLOADS'] = '/var/data/uploads'
 app.config['SECRET_KEY'] = 'mi_clave_secreta_123'
 
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+# Asegurar que las carpetas existan dentro del disco permanente
+os.makedirs(app.config['STATIC_UPLOADS'], exist_ok=True)
+
 db = SQLAlchemy(app)
 
 # --- MODELOS ---
@@ -37,9 +32,14 @@ class FotoGaleria(db.Model):
     inmueble_id = db.Column(db.Integer, db.ForeignKey('inmueble.id'), nullable=False)
     ruta_foto = db.Column(db.String(200), nullable=False)
 
-# Crear las tablas al iniciar
 with app.app_context():
     db.create_all()
+
+# --- Servir las imágenes directamente desde el disco de Render ---
+from flask import send_from_directory
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['STATIC_UPLOADS'], filename)
 
 # --- RUTAS ---
 @app.route('/')
@@ -65,7 +65,7 @@ def admin():
         filename_principal = 'default.jpg'
         if foto_principal and foto_principal.filename != '':
             filename_principal = 'principal_' + secure_filename(foto_principal.filename)
-            foto_principal.save(os.path.join(app.config['UPLOAD_FOLDER'], filename_principal))
+            foto_principal.save(os.path.join(app.config['STATIC_UPLOADS'], filename_principal))
         
         nuevo_inmueble = Inmueble(
             titulo=titulo, sector=sector, descripcion=descripcion,
@@ -78,7 +78,7 @@ def admin():
         for idx, foto in enumerate(fotos_galeria):
             if foto and foto.filename != '':
                 filename_galeria = f"galeria_{nuevo_inmueble.id}_{idx}_{secure_filename(foto.filename)}"
-                foto.save(os.path.join(app.config['UPLOAD_FOLDER'], filename_galeria))
+                foto.save(os.path.join(app.config['STATIC_UPLOADS'], filename_galeria))
                 nueva_foto = FotoGaleria(inmueble_id=nuevo_inmueble.id, ruta_foto=filename_galeria)
                 db.session.add(nueva_foto)
         
@@ -87,44 +87,6 @@ def admin():
         
     lista_inmuebles = Inmueble.query.all()
     return render_template('admin.html', inmuebles=lista_inmuebles)
-
-@app.route('/admin/editar/<int:id>', methods=['GET', 'POST'])
-def editar(id):
-    inmueble = Inmueble.query.get_or_404(id)
-    if request.method == 'POST':
-        inmueble.titulo = request.form['titulo']
-        inmueble.sector = request.form['sector']
-        inmueble.precio = request.form['precio']
-        inmueble.google_maps = request.form['google_maps']
-        inmueble.descripcion = request.form['descripcion']
-        
-        foto_principal = request.files['imagen_principal']
-        if foto_principal and foto_principal.filename != '':
-            filename_principal = 'principal_' + secure_filename(foto_principal.filename)
-            foto_principal.save(os.path.join(app.config['UPLOAD_FOLDER'], filename_principal))
-            inmueble.imagen_principal = filename_principal
-            
-        fotos_galeria = request.files.getlist('galeria_fotos')
-        if fotos_galeria and fotos_galeria[0].filename != '':
-            FotoGaleria.query.filter_by(inmueble_id=inmueble.id).delete()
-            for idx, foto in enumerate(fotos_galeria):
-                if foto and foto.filename != '':
-                    filename_galeria = f"galeria_{inmueble.id}_edit_{idx}_{secure_filename(foto.filename)}"
-                    foto.save(os.path.join(app.config['UPLOAD_FOLDER'], filename_galeria))
-                    nueva_foto = FotoGaleria(inmueble_id=inmueble.id, ruta_foto=filename_galeria)
-                    db.session.add(nueva_foto)
-                
-        db.session.commit()
-        return redirect(url_for('admin'))
-        
-    return render_template('editar.html', inmueble=inmueble)
-
-@app.route('/admin/alternar/<int:id>')
-def alternar_disponibilidad(id):
-    inmueble = Inmueble.query.get_or_404(id)
-    inmueble.disponible = not inmueble.disponible
-    db.session.commit()
-    return redirect(url_for('admin'))
 
 @app.route('/admin/eliminar/<int:id>')
 def eliminar(id):

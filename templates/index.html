@@ -42,72 +42,76 @@
 
                     <div class="space-y-6 mt-1">
                         {% for inm in inmuebles %}
-                            <div class="bg-white border-x border-b border-gray-200 rounded-b-xl shadow-sm p-6 grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                            <div class="bg-white border-x border-b border-gray-200 rounded-b-xl shadow-sm p-6">
                                 
-                                <div class="space-y-4">
-                                    <div class="w-full h-64 bg-gray-100 rounded-lg overflow-hidden border border-gray-200 shadow-inner">
-                                        <img src="/uploads/{{ inm.imagen_principal }}" alt="Fachada o Portada" class="w-full h-full object-cover">
-                                    </div>
-
-                                    <div>
-                                        <h3 class="text-xl font-bold text-slate-900 leading-snug">{{ inm.titulo }}</h3>
-                                        <p class="text-2xl font-extrabold text-green-600 mt-1">$ {{ inm.precio }}</p>
-                                    </div>
-
-                                    <div class="text-gray-600 text-sm bg-slate-50 p-4 rounded-lg border border-slate-100 whitespace-pre-line leading-relaxed">
-                                        {{ inm.descripcion }}
-                                    </div>
-
-                                    <div class="flex flex-col sm:flex-row gap-3 pt-2">
-                                        {% if inm.google_maps %}
-                                            <a href="{{ inm.google_maps }}" target="_blank" class="flex-1 border border-gray-300 hover:bg-gray-50 text-slate-700 text-center py-2.5 rounded-lg text-sm font-bold transition-colors flex items-center justify-center gap-2">
-                                                <i class="fa-solid fa-map-location-dot text-red-500"></i> 📍 Ver Ubicación en Google Maps
-                                            </a>
-                                        {% endif %}
-                                        
-                                        <a href="https://wa.me/573000000000?text=Hola,%20estoy%20interesado%20en%20el%20inmueble:%20{{ inm.titulo }}%20en%20el%20sector%20{{ inm.sector }}" target="_blank" class="flex-1 bg-green-600 hover:bg-green-700 text-white text-center py-2.5 rounded-lg text-sm font-bold transition-colors flex items-center justify-center gap-2 shadow-sm">
-                                            <i class="fa-brands fa-whatsapp text-lg"></i> 💬 Consultar Disponibilidad por WhatsApp
-                                        </a>
-                                    </div>
+                                <div class="border-b border-gray-100 pb-3 mb-4">
+                                    <h3 class="text-2xl font-bold text-slate-900 leading-snug">{{ inm.titulo }}</h3>
                                 </div>
 
-                                <div class="space-y-3">
-                                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block"><i class="fa-solid fa-images"></i> Áreas del inmueble (Galería)</span>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
                                     
-                                    {% if inm.galeria %}
-                                        <div class="relative group w-full h-[400px]">
+                                    <div class="space-y-4">
+                                        <div class="w-full h-64 bg-gray-100 rounded-lg overflow-hidden border border-gray-200 shadow-inner">
+                                            <img src="/uploads/{{ inm.imagen_principal }}" alt="Fachada o Portada" class="w-full h-full object-cover">
+                                        </div>
+
+                                        <div>
+                                            <p class="text-2xl font-extrabold text-green-600">$ {{ inm.precio }}</p>
+                                        </div>
+
+                                        <div class="text-gray-600 text-sm bg-slate-50 p-4 rounded-lg border border-slate-100 whitespace-pre-line leading-relaxed">
+                                            {{ inm.descripcion }}
+                                        </div>
+
+                                        <div class="flex flex-col sm:flex-row gap-3 pt-2">
+                                            {% if inm.google_maps %}
+                                                <a href="{{ inm.google_maps }}" target="_blank" class="flex-1 border border-gray-300 hover:bg-gray-50 text-slate-700 text-center py-2.5 rounded-lg text-sm font-bold transition-colors flex items-center justify-center gap-2">
+                                                    <i class="fa-solid fa-map-location-dot text-red-500"></i> 📍 Ver Ubicación en Google Maps
+                                                </a>
+                                            {% endif %}
                                             
-                                            <div id="slider-{{ inm.id }}" class="w-full h-full flex overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar rounded-lg border border-gray-200 bg-gray-50">
-                                                {% for foto in inm.galeria %}
-                                                    <div class="w-full h-full flex-shrink-0 snap-center">
-                                                        <img src="/uploads/{{ foto.ruta_foto }}" alt="Áreas internas" class="w-full h-full object-cover">
-                                                    </div>
-                                                {% endfor %}
+                                            <a href="https://wa.me/573000000000?text=Hola,%20estoy%20interesado%20en%20el%20inmueble:%20{{ inm.titulo }}%20en%20el%20sector%20{{ inm.sector }}" target="_blank" class="flex-1 bg-green-600 hover:bg-green-700 text-white text-center py-2.5 rounded-lg text-sm font-bold transition-colors flex items-center justify-center gap-2 shadow-sm">
+                                                <i class="fa-brands fa-whatsapp text-lg"></i> 💬 Consultar Disponibilidad por WhatsApp
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    <div class="space-y-3">
+                                        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block"><i class="fa-solid fa-images"></i> Áreas del inmueble (Galería)</span>
+                                        
+                                        {% if inm.galeria %}
+                                            <div class="relative group w-full h-[400px]">
+                                                
+                                                <div id="slider-{{ inm.id }}" class="w-full h-full flex overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar rounded-lg border border-gray-200 bg-gray-50">
+                                                    {% for foto in inm.galeria %}
+                                                        <div class="w-full h-full flex-shrink-0 snap-center">
+                                                            <img src="/uploads/{{ foto.ruta_foto }}" alt="Áreas internas" class="w-full h-full object-cover">
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+
+                                                <button onclick="scrollSlider('slider-{{ inm.id }}', 'izq')" class="absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/75 text-white w-10 h-10 rounded-full flex items-center justify-center cursor-pointer transition-colors shadow-md z-10">
+                                                    <i class="fa-solid fa-chevron-left text-lg"></i>
+                                                </button>
+
+                                                <button onclick="scrollSlider('slider-{{ inm.id }}', 'der')" class="absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/75 text-white w-10 h-10 rounded-full flex items-center justify-center cursor-pointer transition-colors shadow-md z-10">
+                                                    <i class="fa-solid fa-chevron-right text-lg"></i>
+                                                </button>
+
+                                                <span class="absolute bottom-3 right-3 bg-slate-900/80 text-white text-xs px-2.5 py-1 rounded-md font-medium z-10 shadow-sm">
+                                                    <i class="fa-solid fa-camera"></i> Desliza para ver las {{ inm.galeria|length }} fotos
+                                                </span>
+
                                             </div>
+                                        {% else %}
+                                            <div class="w-full h-[400px] bg-slate-50 border border-dashed border-gray-200 rounded-lg flex flex-col items-center justify-center text-gray-400 text-sm">
+                                                <i class="fa-solid fa-image-blur text-4xl mb-2 text-gray-300"></i>
+                                                No se cargaron fotos adicionales de áreas comunes.
+                                            </div>
+                                        {% endif %}
+                                    </div>
 
-                                            <button onclick="scrollSlider('slider-{{ inm.id }}', 'izq')" class="absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/75 text-white w-10 h-10 rounded-full flex items-center justify-center cursor-pointer transition-colors shadow-md z-10">
-                                                <i class="fa-solid fa-chevron-left text-lg"></i>
-                                            </button>
-
-                                            <button onclick="scrollSlider('slider-{{ inm.id }}', 'der')" class="absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/75 text-white w-10 h-10 rounded-full flex items-center justify-center cursor-pointer transition-colors shadow-md z-10">
-                                                <i class="fa-solid fa-chevron-right text-lg"></i>
-                                            </button>
-
-                                            <span class="absolute bottom-3 right-3 bg-slate-900/80 text-white text-xs px-2.5 py-1 rounded-md font-medium z-10 shadow-sm">
-                                                <i class="fa-solid fa-camera"></i> Desliza para ver las {{ inm.galeria|length }} fotos
-                                            </span>
-
-                                        </div>
-                                    {% else %}
-                                        <div class="w-full h-[400px] bg-slate-50 border border-dashed border-gray-200 rounded-lg flex flex-col items-center justify-center text-gray-400 text-sm">
-                                            <i class="fa-solid fa-image-blur text-4xl mb-2 text-gray-300"></i>
-                                            No se cargaron fotos adicionales de áreas comunes.
-                                        </div>
-                                    {% endif %}
-                                </div>
-
-                            </div>
-                        {% endfor %}
+                                </div> </div> {% endfor %}
                     </div>
                 </section>
             {% endfor %}
@@ -123,7 +127,7 @@
     <script>
         function scrollSlider(sliderId, direccion) {
             const slider = document.getElementById(sliderId);
-            const anchoItem = slider.clientWidth; // Obtiene el ancho visible del carrusel
+            const anchoItem = slider.clientWidth;
             
             if (direccion === 'izq') {
                 slider.scrollBy({ left: -anchoItem, behavior: 'smooth' });

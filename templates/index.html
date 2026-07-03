@@ -1,10 +1,9 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catálogo Inmobiliario</title>
-    <!-- Tailwind CSS para diseño moderno -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -15,13 +14,11 @@
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans">
 
-    <!-- Encabezado -->
     <header class="bg-slate-900 text-white py-6 px-4 text-center shadow-sm">
         <h1 class="text-3xl font-bold tracking-tight">Catálogo de Inmuebles</h1>
         <p class="text-slate-400 mt-1 text-sm">Disponibles hoy mismo</p>
     </header>
 
-    <!-- Contenedor Principal -->
     <main class="max-w-6xl mx-auto px-4 py-8">
         
         {% if not sectores %}
@@ -32,9 +29,7 @@
         {% else %}
             
             {% for sector, inmuebles in sectores.items() %}
-                <!-- SEPARADOS POR SECTOR HACIA ABAJO -->
                 <section class="mb-14">
-                    <!-- Barra de Título del Sector -->
                     <div class="bg-blue-600 text-white px-6 py-3 rounded-t-xl flex items-center justify-between shadow-sm">
                         <div class="flex items-center space-x-2">
                             <i class="fa-solid fa-location-dot"></i>
@@ -45,40 +40,34 @@
                         </span>
                     </div>
 
-                    <!-- LISTA DE INMUEBLES EN ESTE SECTOR -->
                     <div class="space-y-6 mt-1">
                         {% for inm in inmuebles %}
-                            <!-- Bloque del Inmueble -->
                             <div class="bg-white border-x border-b border-gray-200 rounded-b-xl shadow-sm p-6 space-y-5">
                                 
-                                <!-- 1. TÍTULO Y PRECIO EN LA PARTE SUPERIOR (PRECIO FUERA DE LA FOTO) -->
-                                <div class="border-b border-gray-100 pb-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                <div class="border-b border-gray-100 pb-2">
                                     <h3 class="text-2xl font-bold text-slate-900 leading-snug">{{ inm.titulo }}</h3>
-                                    <span class="text-2xl font-black text-green-600 whitespace-nowrap">
-                                        $ {{ inm.precio }}
-                                    </span>
                                 </div>
 
-                                <!-- 2. FOTO DE LA FACHADA O PORTADA (SIN RECORTE - TOTALMENTE VISIBLE) -->
-                                <div class="w-full bg-slate-900 rounded-xl overflow-hidden border border-gray-200 shadow-inner flex justify-center items-center">
-                                    <img src="/uploads/{{ inm.imagen_principal }}" alt="Fachada o Portada" class="w-full max-h-[500px] object-contain block mx-auto">
+                                <div class="w-full overflow-hidden border border-gray-200 rounded-xl shadow-sm">
+                                    <img src="/uploads/{{ inm.imagen_principal }}" alt="Fachada o Portada" class="w-full h-auto max-h-[550px] object-cover block mx-auto">
                                 </div>
 
-                                <!-- 3. PARTE INFERIOR: DOS COLUMNAS (DESCRIPCIÓN VS GALERÍA INTERNA) -->
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start pt-2">
                                     
-                                    <!-- COLUMNA IZQUIERDA: DETALLES Y BOTONES -->
                                     <div class="space-y-4">
+                                        <div>
+                                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-1">Valor Mensual / Venta</span>
+                                            <p class="text-3xl font-black text-green-600">$ {{ inm.precio }}</p>
+                                        </div>
+
                                         <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block">
                                             <i class="fa-solid fa-file-lines"></i> Descripción y Detalles
                                         </span>
                                         
-                                        <!-- Descripción -->
                                         <div class="text-gray-600 text-sm bg-slate-50 p-4 rounded-lg border border-slate-100 whitespace-pre-line leading-relaxed">
                                             {{ inm.descripcion }}
                                         </div>
 
-                                        <!-- Botones de Acción -->
                                         <div class="flex flex-col sm:flex-row gap-3 pt-2">
                                             {% if inm.google_maps %}
                                                 <a href="{{ inm.google_maps }}" target="_blank" class="flex-1 border border-gray-300 hover:bg-gray-50 text-slate-700 text-center py-2.5 rounded-lg text-sm font-bold transition-colors flex items-center justify-center gap-2">
@@ -92,17 +81,14 @@
                                         </div>
                                     </div>
 
-                                    <!-- COLUMNA DERECHA: CARRUSEL DE FOTOS DE ÁREAS INTERNAS -->
                                     <div class="space-y-4">
                                         <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block">
                                             <i class="fa-solid fa-images"></i> Áreas del inmueble (Galería de fotos)
                                         </span>
                                         
                                         {% if inm.galeria %}
-                                            <!-- Contenedor Relativo para las flechas del carrusel -->
                                             <div class="relative group w-full h-[320px]">
                                                 
-                                                <!-- Contenedor Deslizable -->
                                                 <div id="slider-{{ inm.id }}" class="w-full h-full flex overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar rounded-lg border border-gray-200 bg-gray-50">
                                                     {% for foto in inm.galeria %}
                                                         <div class="w-full h-full flex-shrink-0 snap-center">
@@ -111,17 +97,14 @@
                                                     {% endfor %}
                                                 </div>
 
-                                                <!-- Flecha Izquierda -->
                                                 <button onclick="scrollSlider('slider-{{ inm.id }}', 'izq')" class="absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/75 text-white w-9 h-9 rounded-full flex items-center justify-center cursor-pointer transition-colors shadow-md z-10">
                                                     <i class="fa-solid fa-chevron-left text-sm"></i>
                                                 </button>
 
-                                                <!-- Flecha Derecha -->
                                                 <button onclick="scrollSlider('slider-{{ inm.id }}', 'der')" class="absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/75 text-white w-9 h-9 rounded-full flex items-center justify-center cursor-pointer transition-colors shadow-md z-10">
                                                     <i class="fa-solid fa-chevron-right text-sm"></i>
                                                 </button>
 
-                                                <!-- Indicador de cantidad de fotos -->
                                                 <span class="absolute bottom-3 right-3 bg-slate-900/80 text-white text-xs px-2.5 py-1 rounded-md font-medium z-10 shadow-sm">
                                                     <i class="fa-solid fa-camera"></i> {{ inm.galeria|length }} fotos internas
                                                 </span>
@@ -135,9 +118,7 @@
                                         {% endif %}
                                     </div>
 
-                                </div> <!-- Cierre de la rejilla inferior -->
-                            </div> <!-- Cierre del bloque del inmueble -->
-                        {% endfor %}
+                                </div> </div> {% endfor %}
                     </div>
                 </section>
             {% endfor %}
@@ -150,7 +131,6 @@
         © 2026 Tu Inmobiliaria Digital. Todos los derechos reservados.
     </footer>
 
-    <!-- FUNCIÓN JAVASCRIPT PARA EL DESPLAZAMIENTO -->
     <script>
         function scrollSlider(sliderId, direccion) {
             const slider = document.getElementById(sliderId);

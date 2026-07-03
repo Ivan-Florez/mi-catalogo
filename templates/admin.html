@@ -95,6 +95,10 @@
                             </div>
                             
                             <div class="flex items-center gap-1">
+                                <a href="/admin/editar/{{ inmueble.id }}" class="bg-amber-50 text-amber-600 hover:bg-amber-100 p-2 rounded-lg transition-colors" title="Editar datos o fotos">
+                                    <i class="fa-solid fa-pen-to-square text-sm"></i>
+                                </a>
+
                                 <a href="/admin/alternar/{{ inmueble.id }}" class="p-2 rounded-lg transition-colors {% if inmueble.disponible %}bg-blue-50 text-blue-600 hover:bg-blue-100{% else %}bg-gray-200 text-gray-650 hover:bg-gray-300{% endif %}" title="Mostrar u Ocultar en la web">
                                     {% if inmueble.disponible %}
                                         <i class="fa-solid fa-eye text-sm"></i>

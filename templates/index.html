@@ -1,85 +1,96 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo Inmobiliario</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
 
-{% block content %}
-<div class="text-center my-4">
-    <h1 class="fw-bold">Inmuebles Disponibles</h1>
-    <p class="text-muted">Explora nuestras opciones y desliza las fotos para conocer cada espacio.</p>
-</div>
+    <header class="bg-slate-900 text-white py-8 px-4 text-center shadow-md">
+        <h1 class="text-3xl font-bold tracking-tight md:text-4xl">Catálogo de Inmuebles</h1>
+        <p class="text-slate-400 mt-2 text-sm md:text-base">Encuentra tu próximo hogar disponible hoy mismo</p>
+    </header>
 
-{% if not sectores %}
-    <div class="alert alert-info text-center">Por el momento no hay inmuebles disponibles.</div>
-{% endif %}
-
-{% for sector, inmuebles in sectores.items() %}
-    <h2 class="sector-header">{{ sector }}</h2>
-    
-    {% for inm in inmuebles %}
-        <div class="card shadow-sm my-4 bg-white border-0 overflow-hidden">
-            <div class="row g-0">
-                
-                <div class="col-md-6 p-4 d-flex flex-column justify-content-between">
-                    <div>
-                        <div class="mb-3 rounded overflow-hidden shadow-sm" style="height: 200px;">
-                            <img src="{{ url_for('static', filename='uploads/' + inm.imagen_principal) }}" class="w-100 h-100" style="object-fit: cover;" alt="Fachada o Portada">
-                        </div>
-
-                        <h3 class="fw-bold text-dark mb-1">{{ inm.titulo }}</h3>
-                        <h4 class="text-success fw-bold mb-3">{{ inm.precio }}</h4>
-                        <hr>
-                        <p class="text-secondary" style="white-space: pre-line; font-size: 1.05rem;">{{ inm.descripcion }}</p>
+    <main class="max-w-6xl mx-auto px-4 py-8">
+        
+        {% if not sectores %}
+            <div class="text-center py-12">
+                <i class="fa-solid fa-house-laptop text-5xl text-gray-300 mb-4"></i>
+                <p class="text-gray-500 text-lg">Por el momento no hay inmuebles publicados en el catálogo.</p>
+            </div>
+        {% else %}
+            
+            {% for sector, inmuebles in sectores.items() %}
+                <section class="mb-12">
+                    <div class="flex items-center space-x-3 mb-6 border-b border-gray-200 pb-2">
+                        <i class="fa-solid fa-location-dot text-red-500 text-xl"></i>
+                        <h2 class="text-2xl font-bold text-slate-800 capitalize">{{ sector }}</h2>
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                            {{ inmuebles|length }} disponibles
+                        </span>
                     </div>
-                    
-                    <div class="d-grid gap-2 mt-4">
-                        {% if inm.google_maps %}
-                            <a href="{{ inm.google_maps }}" target="_blank" class="btn btn-outline-secondary">📍 Ver Ubicación en Google Maps</a>
-                        {% endif %}
-                        <a href="https://wa.me/573005781358?text=Hola,%20estoy%20interesado%20en%20el%20inmueble:%20{{ inm.titulo }}%20del%20{{ inm.sector }}" 
-                           target="_blank" class="btn btn-success btn-lg fw-bold">
-                           💬 Consultar Disponibilidad por WhatsApp
-                        </a>
-                    </div>
-                </div>
 
-                <div class="col-md-6 bg-light" style="min-height: 430px;">
-                    <div id="carrusel-{{ inm.id }}" class="carousel slide h-100" data-bs-ride="false">
-                        <div class="carousel-inner h-100">
-                            
-                            {% if inm.galeria %}
-                                {% for foto in inm.galeria %}
-                                    <div class="carousel-item {% if loop.first %}active{% endif %} h-100">
-                                        <img src="{{ url_for('static', filename='uploads/' + foto.ruta_foto) }}" class="w-100 h-100" style="object-fit: cover; min-height: 430px;" alt="Áreas del inmueble">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {% for inm in inmuebles %}
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow flex flex-col justify-between">
+                                
+                                <div>
+                                    <div class="relative h-56 bg-gray-200">
+                                        <img src="/uploads/{{ inm.imagen_principal }}" alt="{{ inm.titulo }}" class="w-full h-full object-cover">
+                                        <span class="absolute top-3 right-3 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+                                            $ {{ inm.precio }}
+                                        </span>
                                     </div>
-                                {% endfor %}
-                            {% else %}
-                                <div class="carousel-item active h-100 d-flex align-items-center justify-content-center bg-dark text-white-50">
-                                    <div class="text-center">
-                                        <span style="font-size: 3rem;">📸</span>
-                                        <p class="mt-2">No hay fotos adicionales de áreas internas.</p>
+
+                                    <div class="p-5">
+                                        <h3 class="text-lg font-bold text-slate-900 leading-snug mb-2">{{ inm.titulo }}</h3>
+                                        <p class="text-gray-600 text-sm mb-4 whitespace-pre-line">{{ inm.descripcion }}</p>
+                                        
+                                        {% if inm.galeria %}
+                                            <p class="text-xs font-semibold text-gray-400 mb-2">Fotos de áreas internas/comunes:</p>
+                                            <div class="flex space-x-2 overflow-x-auto pb-3 no-scrollbar snap-x">
+                                                {% for foto in inm.galeria %}
+                                                    <div class="flex-shrink-0 w-24 h-16 bg-gray-100 rounded overflow-hidden snap-center border border-gray-200">
+                                                        <img src="/uploads/{{ foto.ruta_foto }}" alt="Áreas del inmueble" class="w-full h-full object-cover hover:scale-105 transition-transform duration-200">
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
                                     </div>
                                 </div>
-                            {% endif %}
 
-                        </div>
-                        
-                        {% if inm.galeria|length > 1 %}
-                            <button class="carousel-control-prev" type="button" data-bs-target="#carrusel-{{ inm.id }}" data-bs-slide="prev">
-                                <span class="carousel-control-prev-icon" aria-hidden="true" style="filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.8));"></span>
-                            </button>
-                            <button class="carousel-control-next" type="button" data-bs-target="#carrusel-{{ inm.id }}" data-bs-slide="next">
-                                <span class="carousel-control-next-icon" aria-hidden="true" style="filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.8));"></span>
-                            </button>
-                        {% endif %}
-                        
-                        <div class="position-absolute bottom-0 end-0 bg-dark text-white px-3 py-1 m-2 rounded-pill small" style="--bs-bg-opacity: .7;">
-                            📸 {{ inm.galeria|length }} Fotos de áreas internas
-                        </div>
+                                <div class="p-5 pt-0 border-t border-gray-50 flex items-center gap-2 mt-auto">
+                                    {% if inm.google_maps %}
+                                        <a href="{{ inm.google_maps }}" target="_blank" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-center py-2 px-3 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-1">
+                                            <i class="fa-solid fa-map-location-dot"></i> Ver Ubicación
+                                        </a>
+                                    {% endif %}
+                                    
+                                    <a href="https://wa.me/573000000000?text=Hola,%20estoy%20interesado%20en%20el%20inmueble:%20{{ inm.titulo }}%20en%20el%20sector%20{{ inm.sector }}" target="_blank" class="flex-1 bg-green-500 hover:bg-green-600 text-white text-center py-2 px-3 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-1 shadow-sm">
+                                        <i class="fa-brands fa-whatsapp text-base"></i> Consultar Disponibilidad
+                                    </a>
+                                </div>
+
+                            </div>
+                        {% endfor %}
                     </div>
-                </div>
+                </section>
+            {% endfor %}
+            
+        {% endif %}
 
-            </div>
-        </div>
-    {% endfor %}
-{% endfor %}
+    </main>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-{% endblock %}
+    <footer class="bg-slate-100 text-center py-6 border-t border-gray-200 mt-12 text-sm text-gray-500">
+        © 2026 Tu Inmobiliaria Digital. Todos los derechos reservados.
+    </footer>
+
+</body>
+</html>

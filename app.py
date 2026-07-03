@@ -1,16 +1,16 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
-# Al estar en modo pago, usamos SQLite pero guardado DENTRO del disco fijo para que no se borre
+# Configuración del disco permanente de Render
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////var/data/catalogo_fijo.db'
 app.config['STATIC_UPLOADS'] = '/var/data/uploads'
 app.config['SECRET_KEY'] = 'mi_clave_secreta_123'
 
-# Asegurar que las carpetas existan dentro del disco permanente
+# Asegurar que la carpeta del disco exista
 os.makedirs(app.config['STATIC_UPLOADS'], exist_ok=True)
 
 db = SQLAlchemy(app)
@@ -24,7 +24,7 @@ class Inmueble(db.Model):
     precio = db.Column(db.String(50), nullable=False)
     google_maps = db.Column(db.String(500))
     imagen_principal = db.Column(db.String(200))
-    disponible = db.Column(db.Boolean, default=True)
+    disponible = db.Column(db.Boolean, default=True) # Mantiene el estado activo/oculto
     galeria = db.relationship('FotoGaleria', backref='inmueble', cascade="all, delete-orphan", lazy=True)
 
 class FotoGaleria(db.Model):
@@ -35,15 +35,15 @@ class FotoGaleria(db.Model):
 with app.app_context():
     db.create_all()
 
-# --- Servir las imágenes directamente desde el disco de Render ---
-from flask import send_from_directory
-@app.route('/uploads/<filename>')
+# --- RUTA CLAVE: Servir las imágenes de forma correcta y con permisos ---
+@app.route('/uploads/<path:filename>')
 def uploaded_file(filename):
-    return send_from_directory(app.config['STATIC_UPLOADS'], filename)
+    return send_from_directory(app.config['STATIC_UPLOADS'], filename, as_attachment=False)
 
-# --- RUTAS ---
+# --- RUTAS PÚBLICAS ---
 @app.route('/')
 def index():
+    # Solo muestra en la web principal los inmuebles que tengan disponible = True
     todos_inmuebles = Inmueble.query.filter_by(disponible=True).order_by(Inmueble.sector).all()
     inmuebles_por_sector = {}
     for inm in todos_inmuebles:
@@ -52,6 +52,7 @@ def index():
         inmuebles_por_sector[inm.sector].append(inm)
     return render_template('index.html', sectores=inmuebles_por_sector)
 
+# --- RUTAS DE ADMINISTRACIÓN ---
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
     if request.method == 'POST':
@@ -87,6 +88,14 @@ def admin():
         
     lista_inmuebles = Inmueble.query.all()
     return render_template('admin.html', inmuebles=lista_inmuebles)
+
+# --- NUEVA RUTA: Botón de Alternar Visibilidad (Mostrar/Ocultar) ---
+@app.route('/admin/alternar/<int:id>')
+def alternar_disponibilidad(id):
+    inmueble = Inmueble.query.get_or_404(id)
+    inmueble.disponible = not inmueble.disponible
+    db.session.commit()
+    return redirect(url_for('admin'))
 
 @app.route('/admin/eliminar/<int:id>')
 def eliminar(id):

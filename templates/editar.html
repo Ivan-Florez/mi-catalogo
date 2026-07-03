@@ -1,53 +1,91 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Inmueble</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 text-gray-800 py-10 px-4">
 
-{% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card p-4 shadow-sm bg-white">
-            <h3 class="fw-bold text-success">✏️ Editar Inmueble: {{ inmueble.titulo }}</h3>
-            <p class="text-muted small">Modifica los datos que necesites. Los campos que dejes igual no se perderán.</p>
-            <hr>
-            
-            <form action="/admin/editar/{{ inmueble.id }}" method="POST" enctype="multipart/form-data">
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Nombre / Título</label>
-                    <input type="text" name="titulo" class="form-control" value="{{ inmueble.titulo }}" required>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Sector / Grupo</label>
-                    <input type="text" name="sector" class="form-control" value="{{ inmueble.sector }}" required>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Precio Actual</label>
-                    <input type="text" name="precio" class="form-control" value="{{ inmueble.precio }}" required>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Link de Google Maps</label>
-                    <input type="url" name="google_maps" class="form-control" value="{{ inmueble.google_maps }}">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Descripción</label>
-                    <textarea name="descripcion" class="form-control" rows="4" required>{{ inmueble.descripcion }}</textarea>
-                </div>
-                
-                <div class="mb-3 bg-light p-2 rounded">
-                    <label class="form-label fw-bold text-danger">Cambiar Foto de Portada (Opcional)</label>
-                    <input type="file" name="imagen_principal" class="form-control" accept="image/*">
-                    <small class="text-muted">Selecciona un archivo solo si quieres cambiar la foto actual.</small>
-                </div>
-                
-                <div class="mb-4 bg-light p-2 rounded">
-                    <label class="form-label fw-bold text-success">Añadir más fotos a la Galería (Opcional)</label>
-                    <input type="file" name="galeria_fotos" class="form-control" accept="image/*" multiple>
-                    <small class="text-muted">Estas fotos se sumarán a las que ya habías subido.</small>
-                </div>
-
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-success w-100 fw-bold fs-5">💾 Guardar Cambios</button>
-                    <a href="/admin" class="btn btn-outline-secondary w-50 align-self-center py-2">Cancelar</a>
-                </div>
-            </form>
+    <div class="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow-md border border-gray-200">
+        <div class="flex items-center justify-between border-b border-gray-100 pb-4 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+                <i class="fa-solid fa-pen-to-square text-amber-500"></i> Editar Inmueble
+            </h2>
+            <a href="/admin" class="text-gray-500 hover:text-gray-800 text-sm font-semibold flex items-center gap-1">
+                <i class="fa-solid fa-arrow-left"></i> Volver al Panel
+            </a>
         </div>
+        
+        <form action="/admin/editar/{{ inmueble.id }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+            <div>
+                <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Título del Inmueble</label>
+                <input type="text" name="titulo" value="{{ inmueble.titulo }}" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Sector / Barrio</label>
+                    <input type="text" name="sector" value="{{ inmueble.sector }}" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Precio (Mensual/Venta)</label>
+                    <input type="text" name="precio" value="{{ inmueble.precio }}" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Link de Google Maps</label>
+                <input type="url" name="google_maps" value="{{ inmueble.google_maps or '' }}" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Descripción Detallada</label>
+                <textarea name="descripcion" rows="4" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">{{ inmueble.descripcion }}</textarea>
+            </div>
+
+            <div class="bg-amber-50/40 p-4 rounded-lg border border-amber-200 space-y-3">
+                <label class="block text-xs font-bold uppercase text-amber-800 mb-1">📷 Foto Principal (Portada)</label>
+                <div class="flex items-center gap-4">
+                    <div class="w-24 h-16 rounded bg-gray-100 overflow-hidden border border-gray-200 shadow-sm flex-shrink-0">
+                        <img src="/uploads/{{ inmueble.imagen_principal }}" alt="Portada actual" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex-1">
+                        <input type="file" name="imagen_principal" accept="image/*" class="block w-full text-xs text-gray-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-amber-100 file:text-amber-700 hover:file:bg-amber-200">
+                        <p class="text-[10px] text-amber-600 mt-1">Selecciona un archivo solo si deseas cambiar la foto de portada actual.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-3">
+                <label class="block text-xs font-bold uppercase text-slate-700 mb-1">🖼️ Fotos de las Áreas Comunes (Galería)</label>
+                
+                {% if inmueble.galeria %}
+                <div class="flex gap-2 overflow-x-auto pb-2">
+                    {% for foto in inmueble.galeria %}
+                        <div class="w-16 h-12 bg-gray-100 border border-gray-200 rounded overflow-hidden flex-shrink-0">
+                            <img src="/uploads/{{ foto.ruta_foto }}" alt="Galería" class="w-full h-full object-cover">
+                        </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <input type="file" name="galeria_fotos" accept="image/*" multiple class="block w-full text-xs text-gray-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-slate-200 file:text-slate-700 hover:file:bg-slate-300">
+                <p class="text-[11px] text-red-500 font-semibold mt-1">⚠️ Nota: Si seleccionas fotos nuevas aquí, se borrarán las fotos anteriores de la galería por completo y se guardarán únicamente las nuevas.</p>
+            </div>
+
+            <div class="flex gap-3 pt-2">
+                <a href="/admin" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-center py-2.5 rounded-lg text-sm font-bold transition-colors">
+                    Cancelar
+                </a>
+                <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg text-sm shadow transition-colors cursor-pointer">
+                    <i class="fa-solid fa-floppy-disk"></i> Guardar Cambios
+                </button>
+            </div>
+        </form>
     </div>
-</div>
-{% endblock %}
+
+</body>
+</html>

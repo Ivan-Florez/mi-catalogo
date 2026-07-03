@@ -1,85 +1,105 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 text-gray-800">
 
-{% block content %}
-<div class="row">
-    <div class="col-md-4">
-        <div class="card p-3 shadow-sm position-sticky" style="top: 20px;">
-            <h4 class="fw-bold text-primary">Subir Nuevo Inmueble</h4>
-            <hr>
-            <form action="/admin" method="POST" enctype="multipart/form-data">
-                <div class="mb-2">
-                    <label class="form-label">Nombre / Título</label>
-                    <input type="text" name="titulo" class="form-control" placeholder="Ej: Apto 201" required>
+    <nav class="bg-blue-600 text-white py-4 px-6 shadow-md flex justify-between items-center">
+        <h1 class="text-xl font-bold flex items-center gap-2">
+            <i class="fa-solid fa-lock"></i> Panel Inmobiliario (Admin)
+        </h1>
+        <a href="/" target="_blank" class="bg-blue-700 hover:bg-blue-800 text-white text-xs font-semibold py-2 px-4 rounded-lg transition-colors flex items-center gap-1">
+            <i class="fa-solid fa-eye"></i> Ver Catálogo Público
+        </a>
+    </nav>
+
+    <div class="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-sm border border-gray-200 h-fit">
+            <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2 border-b border-gray-100 pb-2">
+                <i class="fa-solid fa-circle-plus text-blue-500"></i> Publicar Inmueble
+            </h2>
+            
+            <form action="/admin" method="POST" enctype="multipart/form-data" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Título del Inmueble</label>
+                    <input type="text" name="titulo" required placeholder="Ej: Apartamento Amoblado 3 Hab" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
                 </div>
-                <div class="mb-2">
-                    <label class="form-label">Sector / Grupo</label>
-                    <input type="text" name="sector" class="form-control" placeholder="Ej: Sector 1" required>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Sector / Barrio</label>
+                        <input type="text" name="sector" required placeholder="Ej: Chapinero" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Precio (Mensual/Venta)</label>
+                        <input type="text" name="precio" required placeholder="Ej: 1'800.000" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+                    </div>
                 </div>
-                <div class="mb-2">
-                    <label class="form-label">Precio</label>
-                    <input type="text" name="precio" class="form-control" placeholder="Ej: $1.200.000" required>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Link de Google Maps</label>
+                    <input type="url" name="google_maps" placeholder="https://maps.google.com/..." class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
                 </div>
-                <div class="mb-2">
-                    <label class="form-label">Link de Google Maps</label>
-                    <input type="url" name="google_maps" class="form-control">
+
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Descripción Detallada</label>
+                    <textarea name="descripcion" rows="4" required placeholder="Características del inmuebles, servicios públicos, requisitos..." class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"></textarea>
                 </div>
-                <div class="mb-2">
-                    <label class="form-label">Descripción</label>
-                    <textarea name="descripcion" class="form-control" rows="3" required></textarea>
+
+                <div class="bg-blue-50/50 p-3 rounded-lg border border-dashed border-blue-200">
+                    <label class="block text-xs font-bold uppercase text-blue-700 mb-1">📷 Foto Principal (Portada)</label>
+                    <input type="file" name="imagen_principal" accept="image/*" required class="block w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200">
                 </div>
-                <div class="mb-2">
-                    <label class="form-label text-danger fw-bold">Foto de Portada</label>
-                    <input type="file" name="imagen_principal" class="form-control" accept="image/*" required>
+
+                <div class="bg-slate-50 p-3 rounded-lg border border-dashed border-slate-200">
+                    <label class="block text-xs font-bold uppercase text-slate-700 mb-1">🖼️ Fotos de la Galería (Múltiples)</label>
+                    <input type="file" name="galeria_fotos" accept="image/*" multiple class="block w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-slate-200 file:text-slate-700 hover:file:bg-slate-300">
+                    <p class="text-[10px] text-gray-400 mt-1">Puedes seleccionar varias fotos de un solo golpe.</p>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label text-success fw-bold">Agregar Fotos de Galería</label>
-                    <input type="file" name="galeria_fotos" class="form-control" accept="image/*" multiple>
-                </div>
-                <button type="submit" class="btn btn-primary w-100 fw-bold">🚀 Publicar Inmueble</button>
+
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg text-sm shadow transition-colors mt-2 cursor-pointer">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Guardar en Catálogo
+                </button>
             </form>
         </div>
+
+        <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+            <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2 border-b border-gray-100 pb-2">
+                <i class="fa-solid fa-list-check text-slate-600"></i> Inventario de Inmuebles
+            </h2>
+
+            {% if not inmuebles %}
+                <p class="text-gray-400 text-sm text-center py-8">No hay registros guardados en la base de datos todavía.</p>
+            {% else %}
+                <div class="space-y-3">
+                    {% for inmueble in inmuebles %}
+                        <div class="flex items-center justify-between p-3 border border-gray-100 rounded-xl hover:bg-slate-50/50 transition-colors gap-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-16 h-12 rounded bg-gray-100 overflow-hidden flex-shrink-0">
+                                    <img src="/uploads/{{ inmueble.imagen_principal }}" alt="Miniatura" class="w-full h-full object-cover">
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-slate-900 leading-tight line-clamp-1">{{ inmueble.titulo }}</h4>
+                                    <p class="text-xs text-gray-500 capitalize"><i class="fa-solid fa-location-dot text-[10px]"></i> {{ inmueble.sector }} — <strong class="text-blue-600">${{ inmueble.precio }}</strong></p>
+                                </div>
+                            </div>
+                            
+                            <a href="/admin/eliminar/{{ inmueble.id }}" onclick="return confirm('¿Seguro que deseas eliminar este inmueble de forma permanente?')" class="bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold p-2 rounded-lg transition-colors" title="Eliminar Inmueble">
+                                <i class="fa-solid fa-trash-can text-sm"></i>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
     </div>
 
-    <div class="col-md-8">
-        <h4 class="fw-bold">Inventario de Inmuebles</h4>
-        <div class="table-responsive bg-white p-3 rounded shadow-sm">
-            <table class="table table-hover align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th>Portada</th>
-                        <th>Inmueble</th>
-                        <th>Sector</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for inm in inmuebles %}
-                    <tr>
-                        <td>
-                            <img src="{{ url_for('static', filename='uploads/' + inm.imagen_principal) }}" style="width: 60px; height: 45px; object-fit: cover;" class="rounded">
-                        </td>
-                        <td><strong>{{ inm.titulo }}</strong><br><small class="text-muted">{{ inm.precio }}</small></td>
-                        <td><span class="badge bg-secondary">{{ inm.sector }}</span></td>
-                        <td>
-                            {% if inm.disponible %}
-                                <span class="badge bg-success">Visible</span>
-                            {% else %}
-                                <span class="badge bg-warning text-dark">Oculto</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <a href="/admin/alternar/{{ inm.id }}" class="btn btn-sm {% if inm.disponible %}btn-outline-warning text-dark{% else %}btn-outline-success{% endif %}">
-                                {% if inm.disponible %} Ocultar {% else %} Mostrar {% endif %}
-                            </a>
-                            <a href="/admin/editar/{{ inm.id }}" class="btn btn-sm btn-info text-white">✏️ Editar</a>
-                            <a href="/admin/eliminar/{{ inm.id }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Eliminar por completo?')">🗑️</a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-{% endblock %}
+</body>
+</html>

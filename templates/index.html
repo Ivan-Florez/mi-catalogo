@@ -53,12 +53,12 @@
                                 
                                 <!-- 1. TÍTULO DEL INMUEBLE (ANCHO COMPLETO) -->
                                 <div class="border-b border-gray-100 pb-2">
-                                    <h3 class="text-2xl font-bold text-slate-900 leading-snug">{{ inm.titulo }}</h3>
+                                    <h3 class="text-2xl font-bold text-slate-900 leading-snug capitalize">{{ inm.titulo }}</h3>
                                 </div>
 
-                                <!-- 2. FOTO DE LA FACHADA O PORTADA (ENFOQUE EN LA PARTE INFERIOR) -->
-                                <div class="w-full h-[260px] md:h-[340px] overflow-hidden border border-gray-200 rounded-xl shadow-sm">
-                                    <img src="/uploads/{{ inm.imagen_principal }}" alt="Fachada o Portada" class="w-full h-full object-cover object-bottom block mx-auto">
+                                <!-- 2. FOTO DE LA FACHADA O PORTADA (ENFOQUE PERFECTAMENTE CENTRADO) -->
+                                <div class="w-full h-[260px] md:h-[360px] overflow-hidden border border-gray-200 rounded-xl shadow-sm">
+                                    <img src="/uploads/{{ inm.imagen_principal }}" alt="Fachada o Portada" class="w-full h-full object-cover object-center block mx-auto">
                                 </div>
 
                                 <!-- 3. PARTE INFERIOR: DOS COLUMNAS -->

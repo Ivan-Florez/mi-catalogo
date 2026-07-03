@@ -49,7 +49,7 @@
 
                 <div>
                     <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Descripción Detallada</label>
-                    <textarea name="descripcion" rows="4" required placeholder="Características del inmuebles, servicios públicos, requisitos..." class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"></textarea>
+                    <textarea name="descripcion" rows="4" required placeholder="Características del inmueble..." class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"></textarea>
                 </div>
 
                 <div class="bg-blue-50/50 p-3 rounded-lg border border-dashed border-blue-200">
@@ -60,7 +60,6 @@
                 <div class="bg-slate-50 p-3 rounded-lg border border-dashed border-slate-200">
                     <label class="block text-xs font-bold uppercase text-slate-700 mb-1">🖼️ Fotos de la Galería (Múltiples)</label>
                     <input type="file" name="galeria_fotos" accept="image/*" multiple class="block w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-slate-200 file:text-slate-700 hover:file:bg-slate-300">
-                    <p class="text-[10px] text-gray-400 mt-1">Puedes seleccionar varias fotos de un solo golpe.</p>
                 </div>
 
                 <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg text-sm shadow transition-colors mt-2 cursor-pointer">
@@ -79,20 +78,35 @@
             {% else %}
                 <div class="space-y-3">
                     {% for inmueble in inmuebles %}
-                        <div class="flex items-center justify-between p-3 border border-gray-100 rounded-xl hover:bg-slate-50/50 transition-colors gap-4">
+                        <div class="flex items-center justify-between p-3 border border-gray-100 rounded-xl hover:bg-slate-50/50 transition-colors gap-4 {% if not inmueble.disponible %}opacity-50 bg-gray-50{% endif %}">
                             <div class="flex items-center space-x-3">
                                 <div class="w-16 h-12 rounded bg-gray-100 overflow-hidden flex-shrink-0">
                                     <img src="/uploads/{{ inmueble.imagen_principal }}" alt="Miniatura" class="w-full h-full object-cover">
                                 </div>
                                 <div>
                                     <h4 class="text-sm font-bold text-slate-900 leading-tight line-clamp-1">{{ inmueble.titulo }}</h4>
-                                    <p class="text-xs text-gray-500 capitalize"><i class="fa-solid fa-location-dot text-[10px]"></i> {{ inmueble.sector }} — <strong class="text-blue-600">${{ inmueble.precio }}</strong></p>
+                                    <p class="text-xs text-gray-500 capitalize">
+                                        <i class="fa-solid fa-location-dot text-[10px]"></i> {{ inmueble.sector }} — <strong class="text-blue-600">${{ inmueble.precio }}</strong>
+                                        {% if not inmueble.disponible %}
+                                            <span class="text-red-500 font-bold ml-2">(Oculto)</span>
+                                        {% endif %}
+                                    </p>
                                 </div>
                             </div>
                             
-                            <a href="/admin/eliminar/{{ inmueble.id }}" onclick="return confirm('¿Seguro que deseas eliminar este inmueble de forma permanente?')" class="bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold p-2 rounded-lg transition-colors" title="Eliminar Inmueble">
-                                <i class="fa-solid fa-trash-can text-sm"></i>
-                            </a>
+                            <div class="flex items-center gap-1">
+                                <a href="/admin/alternar/{{ inmueble.id }}" class="p-2 rounded-lg transition-colors {% if inmueble.disponible %}bg-blue-50 text-blue-600 hover:bg-blue-100{% else %}bg-gray-200 text-gray-650 hover:bg-gray-300{% endif %}" title="Mostrar u Ocultar en la web">
+                                    {% if inmueble.disponible %}
+                                        <i class="fa-solid fa-eye text-sm"></i>
+                                    {% else %}
+                                        <i class="fa-solid fa-eye-slash text-sm"></i>
+                                    {% endif %}
+                                </a>
+
+                                <a href="/admin/eliminar/{{ inmueble.id }}" onclick="return confirm('¿Seguro que deseas eliminar este inmueble de forma permanente?')" class="bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold p-2 rounded-lg transition-colors" title="Eliminar Inmueble">
+                                    <i class="fa-solid fa-trash-can text-sm"></i>
+                                </a>
+                            </div>
                         </div>
                     {% endfor %}
                 </div>

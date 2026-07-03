@@ -14,7 +14,7 @@ services:
           name: n8n-db
           property: connectionString
 
-  # 2. Servidor de n8n
+  # 2. Servidor de n8n (Optimizado para no consumir RAM)
   - type: web
     name: mi-n8n-automatizacion
     env: docker
@@ -51,6 +51,13 @@ services:
         fromDatabase:
           name: n8n-db
           property: password
+      # --- CONFIGURACIONES ANTICHOQUE DE MEMORIA RAM ---
+      - key: N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS
+        value: "false"
+      - key: EXECUTIONS_DATA_PRUNE # Borra el historial viejo para no saturar
+        value: "true"
+      - key: GENERIC_TIMEZONE
+        value: America/Bogota
 
 databases:
   # 3. La base de datos central (Plan Free)
